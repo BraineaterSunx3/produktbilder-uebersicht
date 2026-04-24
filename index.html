@@ -3,229 +3,542 @@
 <head>
   <meta charset="UTF-8">
   <title>Produktbilder Übersicht – mit Speicherfunktion</title>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
+    :root {
+      --bg: #0b0c10;
+      --card: #161925;
+      --accent: #3fa9f5;
+      --accent-soft: rgba(63,169,245,0.2);
+      --text: #f5f7ff;
+      --muted: #a0a4b8;
+      --danger: #ff4d6a;
+      --border: #262a3b;
+      --radius-lg: 14px;
+      --radius-md: 10px;
+      --radius-sm: 6px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      max-width: 1000px;
-      margin: 20px auto;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #1b2138 0, #05060a 55%, #020308 100%);
+      color: var(--text);
+      padding: 24px;
       line-height: 1.5;
     }
-    h1 {
-      margin-bottom: 30px;
+
+    .app {
+      max-width: 1200px;
+      margin: 0 auto;
     }
-    .modell {
-      border: 2px solid #ddd;
-      padding: 20px;
-      margin-bottom: 30px;
-    }
-    .modell h2 {
-      margin-top: 0;
-      background: #f5f5f5;
-      padding: 10px;
-    }
-    .block {
+
+    header {
+      margin-bottom: 24px;
       display: flex;
-      align-items: flex-start;
-      gap: 20px;
-      margin-bottom: 20px;
-      border-bottom: 1px solid #eee;
-      padding-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: baseline;
+      justify-content: space-between;
     }
-    .block img {
-      max-width: 250px;
-      border: 1px solid #ccc;
+
+    h1 {
+      font-size: 1.6rem;
+      letter-spacing: 0.03em;
     }
-    .textfeld {
-      flex: 1;
+
+    .badge {
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.8rem;
+      border: 1px solid rgba(63,169,245,0.4);
     }
-    textarea {
+
+    .summary-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .summary-pill {
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(22,25,37,0.9);
+      border: 1px solid var(--border);
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .summary-pill strong {
+      color: var(--text);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      background: radial-gradient(circle at top left, #22263a 0, #111320 55%, #080912 100%);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      padding: 14px 14px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.55);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .card-title {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .card-sub {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .qty {
+      font-size: 0.85rem;
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    .images-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 6px;
+    }
+
+    .img-block {
+      background: #05060b;
+      border-radius: var(--radius-md);
+      border: 1px solid #1b1f30;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 4px;
+    }
+
+    .img-block img {
       width: 100%;
-      height: 120px;
-      font-size: 14px;
-      padding: 10px;
-      border: 1px solid #ccc;
+      display: block;
+      border-radius: 6px;
+      object-fit: cover;
+      max-height: 140px;
+    }
+
+    .img-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .colors {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 2px;
+    }
+
+    .color-pill {
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.08);
+      font-size: 0.7rem;
+      color: var(--muted);
+      background: rgba(5,6,12,0.9);
+    }
+
+    .notes {
+      margin-top: 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .notes label {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    .notes textarea {
+      width: 100%;
+      min-height: 52px;
       resize: vertical;
+      border-radius: var(--radius-sm);
+      border: 1px solid #262a3b;
+      background: rgba(5,6,12,0.95);
+      color: var(--text);
+      font-size: 0.8rem;
+      padding: 6px 7px;
+      outline: none;
+    }
+
+    .notes textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(63,169,245,0.4);
+    }
+
+    .footer-bar {
+      margin-top: 18px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .btn {
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(5,6,12,0.9);
+      color: var(--muted);
+      padding: 5px 10px;
+      font-size: 0.78rem;
+      cursor: pointer;
+    }
+
+    .btn-danger {
+      border-color: rgba(255,77,106,0.6);
+      color: var(--danger);
+    }
+
+    .btn:hover {
+      background: rgba(255,255,255,0.03);
+    }
+
+    @media (max-width: 640px) {
+      body { padding: 14px; }
+      header { flex-direction: column; align-items: flex-start; }
+      .images-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
   </style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div>
+      <h1>Produktbilder Übersicht</h1>
+      <div class="card-sub">Sport-Fitness-Armbänder – Modelle, Farben, Bestände & Notizen</div>
+    </div>
+    <span class="badge">Automatische Speicherung aktiv</span>
+  </header>
 
-  <script>
-    // Speichern beim Tippen
-    function saveText(id) {
-      const value = document.getElementById(id).value;
-      localStorage.setItem(id, value);
-    }
+  <div class="summary-bar">
+    <div class="summary-pill"><strong>Modell 1:</strong> 32 Stück (blau, orange/gelb, grün, rot, pink, schwarz)</div>
+    <div class="summary-pill"><strong>Modell 2:</strong> 14 Stück (pink, schwarz)</div>
+    <div class="summary-pill"><strong>Modell 3:</strong> 11 Stück (grün, rot)</div>
+    <div class="summary-pill"><strong>Modell 4:</strong> 8 Stück (pink, weiß)</div>
+    <div class="summary-pill"><strong>Modell 5:</strong> 3 Stück (pink)</div>
+    <div class="summary-pill"><strong>Modell 6:</strong> 81 Stück (blau, lila, rosa, rot, schwarz)</div>
+  </div>
 
-    // Beim Laden wiederherstellen
-    function loadAll() {
-      const fields = document.querySelectorAll("textarea");
-      fields.forEach(f => {
-        const saved = localStorage.getItem(f.id);
-        if (saved !== null) f.value = saved;
+  <div class="grid">
+
+    <!-- Modell 1 -->
+    <section class="card" data-model="M1">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Modell 1</div>
+          <div class="card-sub">Farbauswahl & Gesamtbild</div>
+        </div>
+        <div class="qty">32 Stück</div>
+      </div>
+
+      <div class="images-row">
+        <div class="img-block">
+          <img src="M1gesamt.jpg" alt="Modell 1 – Gesamtbild Farbauswahl">
+          <div class="img-label">Gesamtbild Farbauswahl</div>
+        </div>
+        <div class="img-block">
+          <img src="M1blau.jpg" alt="Modell 1 – Blau">
+          <div class="img-label">Blau</div>
+        </div>
+        <div class="img-block">
+          <img src="M1gelb.jpg" alt="Modell 1 – Orange/Gelb">
+          <div class="img-label">Orange / Gelb</div>
+        </div>
+        <div class="img-block">
+          <img src="M1grün.jpg" alt="Modell 1 – Grün">
+          <div class="img-label">Grün</div>
+        </div>
+        <div class="img-block">
+          <img src="M1rot.jpg" alt="Modell 1 – Rot">
+          <div class="img-label">Rot</div>
+        </div>
+        <div class="img-block">
+          <img src="M1pink.jpg" alt="Modell 1 – Pink">
+          <div class="img-label">Pink</div>
+        </div>
+        <div class="img-block">
+          <img src="M1schwarz.jpg" alt="Modell 1 – Schwarz">
+          <div class="img-label">Schwarz</div>
+        </div>
+      </div>
+
+      <div class="colors">
+        <span class="color-pill">Blau</span>
+        <span class="color-pill">Orange / Gelb</span>
+        <span class="color-pill">Grün</span>
+        <span class="color-pill">Rot</span>
+        <span class="color-pill">Pink</span>
+        <span class="color-pill">Schwarz</span>
+      </div>
+
+      <div class="notes">
+        <label for="notes-M1">Notizen zu Modell 1</label>
+        <textarea id="notes-M1" data-key="notes-M1" placeholder="z. B. Zustand, bevorzugte Sets, Kombis für eBay-Angebote …"></textarea>
+      </div>
+    </section>
+
+    <!-- Modell 2 -->
+    <section class="card" data-model="M2">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Modell 2</div>
+          <div class="card-sub">Farbauswahl & Gesamtbild</div>
+        </div>
+        <div class="qty">14 Stück</div>
+      </div>
+
+      <div class="images-row">
+        <div class="img-block">
+          <img src="M2gesamt.jpg" alt="Modell 2 – Gesamtbild Farbauswahl">
+          <div class="img-label">Gesamtbild Farbauswahl</div>
+        </div>
+        <div class="img-block">
+          <img src="M2pink.jpg" alt="Modell 2 – Pink">
+          <div class="img-label">Pink</div>
+        </div>
+        <div class="img-block">
+          <img src="M2schwarz.jpg" alt="Modell 2 – Schwarz">
+          <div class="img-label">Schwarz</div>
+        </div>
+      </div>
+
+      <div class="colors">
+        <span class="color-pill">Pink</span>
+        <span class="color-pill">Schwarz</span>
+      </div>
+
+      <div class="notes">
+        <label for="notes-M2">Notizen zu Modell 2</label>
+        <textarea id="notes-M2" data-key="notes-M2" placeholder="z. B. Bundles, Restmengen, Preisideen …"></textarea>
+      </div>
+    </section>
+
+    <!-- Modell 3 -->
+    <section class="card" data-model="M3">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Modell 3</div>
+          <div class="card-sub">Farbauswahl & Gesamtbild</div>
+        </div>
+        <div class="qty">11 Stück</div>
+      </div>
+
+      <div class="images-row">
+        <div class="img-block">
+          <img src="M3gesamt.jpg" alt="Modell 3 – Gesamtbild Farbauswahl">
+          <div class="img-label">Gesamtbild Farbauswahl</div>
+        </div>
+        <div class="img-block">
+          <img src="M3grün.jpg" alt="Modell 3 – Grün">
+          <div class="img-label">Grün</div>
+        </div>
+        <div class="img-block">
+          <img src="M3rot.jpg" alt="Modell 3 – Rot">
+          <div class="img-label">Rot</div>
+        </div>
+      </div>
+
+      <div class="colors">
+        <span class="color-pill">Grün</span>
+        <span class="color-pill">Rot</span>
+      </div>
+
+      <div class="notes">
+        <label for="notes-M3">Notizen zu Modell 3</label>
+        <textarea id="notes-M3" data-key="notes-M3"></textarea>
+      </div>
+    </section>
+
+    <!-- Modell 4 -->
+    <section class="card" data-model="M4">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Modell 4</div>
+          <div class="card-sub">Farbauswahl & Gesamtbild</div>
+        </div>
+        <div class="qty">8 Stück</div>
+      </div>
+
+      <div class="images-row">
+        <div class="img-block">
+          <img src="M4gesamt.jpg" alt="Modell 4 – Gesamtbild Farbauswahl">
+          <div class="img-label">Gesamtbild Farbauswahl</div>
+        </div>
+        <div class="img-block">
+          <img src="M4pink.jpg" alt="Modell 4 – Pink">
+          <div class="img-label">Pink</div>
+        </div>
+        <div class="img-block">
+          <img src="M4weiß.jpg" alt="Modell 4 – Weiß">
+          <div class="img-label">Weiß</div>
+        </div>
+      </div>
+
+      <div class="colors">
+        <span class="color-pill">Pink</span>
+        <span class="color-pill">Weiß</span>
+      </div>
+
+      <div class="notes">
+        <label for="notes-M4">Notizen zu Modell 4</label>
+        <textarea id="notes-M4" data-key="notes-M4"></textarea>
+      </div>
+    </section>
+
+    <!-- Modell 5 -->
+    <section class="card" data-model="M5">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Modell 5</div>
+          <div class="card-sub">Einzelfarbe</div>
+        </div>
+        <div class="qty">3 Stück</div>
+      </div>
+
+      <div class="images-row">
+        <div class="img-block">
+          <img src="M5pink.jpg" alt="Modell 5 – Pink">
+          <div class="img-label">Pink</div>
+        </div>
+      </div>
+
+      <div class="colors">
+        <span class="color-pill">Pink</span>
+      </div>
+
+      <div class="notes">
+        <label for="notes-M5">Notizen zu Modell 5</label>
+        <textarea id="notes-M5" data-key="notes-M5"></textarea>
+      </div>
+    </section>
+
+    <!-- Modell 6 -->
+    <section class="card" data-model="M6">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Modell 6</div>
+          <div class="card-sub">Front / Back & Farbauswahl</div>
+        </div>
+        <div class="qty">81 Stück</div>
+      </div>
+
+      <div class="images-row">
+        <div class="img-block">
+          <img src="M6gesamtFront.jpg" alt="Modell 6 – Gesamtbild Front">
+          <div class="img-label">Gesamtbild Front</div>
+        </div>
+        <div class="img-block">
+          <img src="M6gesamtBack.jpg" alt="Modell 6 – Gesamtbild Back">
+          <div class="img-label">Gesamtbild Back</div>
+        </div>
+        <div class="img-block">
+          <img src="M6blau.jpg" alt="Modell 6 – Blau">
+          <div class="img-label">Blau</div>
+        </div>
+        <div class="img-block">
+          <img src="M6lila.jpg" alt="Modell 6 – Lila">
+          <div class="img-label">Lila</div>
+        </div>
+        <div class="img-block">
+          <img src="M6rosa.jpg" alt="Modell 6 – Rosa">
+          <div class="img-label">Rosa</div>
+        </div>
+        <div class="img-block">
+          <img src="M6rot.jpg" alt="Modell 6 – Rot">
+          <div class="img-label">Rot</div>
+        </div>
+        <div class="img-block">
+          <img src="M6schwarz.jpg" alt="Modell 6 – Schwarz">
+          <div class="img-label">Schwarz</div>
+        </div>
+      </div>
+
+      <div class="colors">
+        <span class="color-pill">Blau</span>
+        <span class="color-pill">Lila</span>
+        <span class="color-pill">Rosa</span>
+        <span class="color-pill">Rot</span>
+        <span class="color-pill">Schwarz</span>
+      </div>
+
+      <div class="notes">
+        <label for="notes-M6">Notizen zu Modell 6</label>
+        <textarea id="notes-M6" data-key="notes-M6"></textarea>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="footer-bar">
+    <div>Alle Notizen werden lokal im Browser gespeichert (localStorage) und bleiben beim Neuladen erhalten.</div>
+    <button class="btn btn-danger" id="clear-all">Alle gespeicherten Notizen löschen</button>
+  </div>
+</div>
+
+<script>
+  (function () {
+    const STORAGE_PREFIX = 'produktbilder-notes-';
+
+    function loadNotes() {
+      document.querySelectorAll('textarea[data-key]').forEach(el => {
+        const key = STORAGE_PREFIX + el.dataset.key;
+        const saved = localStorage.getItem(key);
+        if (saved !== null) {
+          el.value = saved;
+        }
+        el.addEventListener('input', () => {
+          localStorage.setItem(key, el.value);
+        });
       });
     }
-  </script>
-</head>
 
-<body onload="loadAll()">
+    function clearAll() {
+      if (!confirm('Alle gespeicherten Notizen wirklich löschen?')) return;
+      document.querySelectorAll('textarea[data-key]').forEach(el => {
+        const key = STORAGE_PREFIX + el.dataset.key;
+        localStorage.removeItem(key);
+        el.value = '';
+      });
+    }
 
-<h1>Produktbilder & Notizen – automatische Speicherung</h1>
-
-<!-- ===================== MODELL 1 ===================== -->
-<div class="modell">
-  <h2>Modell 1</h2>
-
-  <div class="block">
-    <img src="M1blau.jpg">
-    <div class="textfeld"><textarea id="M1blau" oninput="saveText('M1blau')"></textarea></div>
-  </div>
-
-  <div class="block">
-    <img src="M1gelb.jpg">
-    <div class="textfeld"><textarea id="M1gelb" oninput="saveText('M1gelb')"></textarea></div>
-  </div>
-
-  <div class="block">
-    <img src="M1grün.jpg">
-    <div class="textfeld"><textarea id="M1grün" oninput="saveText('M1grün')"></textarea></div>
-  </div>
-
-  <div class="block">
-    <img src="M1rot.jpg">
-    <div class="textfeld"><textarea id="M1rot" oninput="saveText('M1rot')"></textarea></div>
-  </div>
-
-  <div class="block">
-    <img src="M1pink.jpg">
-    <div class="textfeld"><textarea id="M1pink" oninput="saveText('M1pink')"></textarea></div>
-  </div>
-
-  <div class="block">
-    <img src="M1schwarz.jpg">
-    <div class="textfeld"><textarea id="M1schwarz" oninput="saveText('M1schwarz')"></textarea></div>
-  </div>
-
-  <div class="block">
-    <img src="M1gesamt.jpg">
-    <div class="textfeld"><textarea id="M1gesamt" oninput="saveText('M1gesamt')"></textarea></div>
-  </div>
-
-</div>
-
-<!-- ===================== MODELL 2 ===================== -->
-<div class="modell">
-  <h2>Modell 2</h2>
-
-  <div class="block">
-    <img src="M2pink.jpg">
-    <div class="textfeld"><textarea id="M2pink" oninput="saveText('M2pink')"></textarea></div>
-  </div>
-
-  <div class="block">
-    <img src="M2schwarz.jpg">
-    <div class="textfeld"><textarea id="M2schwarz" oninput="saveText('M2schwarz')"></textarea></div>
-  </div>
-
-  <div class="block">
-    <img src="M2gesamt.jpg">
-    <div class="textfeld"><textarea id="M2gesamt" oninput="saveText('M2gesamt')"></textarea></div>
-  </div>
-
-</div>
-
-<!-- ===================== MODELL 3 ===================== -->
-<div class="modell">
-  <h2>Modell 3</h2>
-
-  <div class="block">
-    <img src="M3grün.jpg">
-    <div class="textfeld"><textarea id="M3grün" oninput="saveText('M3grün')"></textarea></div>
-  </div>
-
-  <div class="block">
-    <img src="M3rot.jpg">
-    <div class="textfeld"><textarea id="M3rot" oninput="saveText('M3rot')"></textarea></div>
-  </div>
-
-  <div class="block">
-    <img src="M3gesamt.jpg">
-    <div class="textfeld"><textarea id="M3gesamt" oninput="saveText('M3gesamt')"></textarea></div>
-  </div>
-
-</div>
-
-<!-- ===================== MODELL 4 ===================== -->
-<div class="modell">
-  <h2>Modell 4 – Bauchtasche</h2>
-
-  <div class="block">
-    <img src="M4pink.jpg">
-    <div class="textfeld"><textarea id="M4pink" oninput="saveText('M4pink')"></textarea></div>
-  </div>
-
-  <div class="block">
-    <img src="M4weiß.jpg">
-    <div class="textfeld"><textarea id="M4weiß" oninput="saveText('M4weiß')"></textarea></div>
-  </div>
-
-  <div class="block">
-    <img src="M4gesamt.jpg">
-    <div class="textfeld"><textarea id="M4gesamt" oninput="saveText('M4gesamt')"></textarea></div>
-  </div>
-
-</div>
-
-<!-- ===================== MODELL 5 ===================== -->
-<div class="modell">
-  <h2>Modell 5</h2>
-
-  <div class="block">
-    <img src="M5pink.jpg">
-    <div class="textfeld"><textarea id="M5pink" oninput="saveText('M5pink')"></textarea></div>
-  </div>
-
-</div>
-
-<!-- ===================== MODELL 6 ===================== -->
-<div class="modell">
-  <h2>Modell 6</h2>
-
-  <div class="block">
-    <img src="M6blau.jpg">
-    <div class="textfeld"><textarea id="M6blau" oninput="saveText('M6blau')"></textarea></div>
-  </div>
-
-  <div class="block">
-    <img src="M6lila.jpg">
-    <div class="textfeld"><textarea id="M6lila" oninput="saveText('M6lila')"></textarea></div>
-  </div>
-
-  <div class="block">
-    <img src="M6rosa.jpg">
-    <div class="textfeld"><textarea id="M6rosa" oninput="saveText('M6rosa')"></textarea></div>
-  </div>
-
-  <div class="block">
-    <img src="M6rot.jpg">
-    <div class="textfeld"><textarea id="M6rot" oninput="saveText('M6rot')"></textarea></div>
-  </div>
-
-  <div class="block">
-    <img src="M6schwarz.jpg">
-    <div class="textfeld"><textarea id="M6schwarz" oninput="saveText('M6schwarz')"></textarea></div>
-  </div>
-
-  <div class="block">
-    <img src="M6gesamtFront.jpg">
-    <div class="textfeld"><textarea id="M6gesamtFront" oninput="saveText('M6gesamtFront')"></textarea></div>
-  </div>
-
-  <div class="block">
-    <img src="M6gesamtBack.jpg">
-    <div class="textfeld"><textarea id="M6gesamtBack" oninput="saveText('M6gesamtBack')"></textarea></div>
-  </div>
-
-</div>
-
+    document.getElementById('clear-all').addEventListener('click', clearAll);
+    loadNotes();
+  })();
+</script>
 </body>
 </html>
